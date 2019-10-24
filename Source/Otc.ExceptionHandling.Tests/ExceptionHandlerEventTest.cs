@@ -24,7 +24,8 @@ namespace Otc.ExceptionHandling.Tests
             var httpContextMock = new Mock<HttpContext>();
             var response = new Mock<Response>();
 
-            response.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            response.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), 
+                It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .Callback((byte[] data, int offset, int length, CancellationToken token) =>
             {
 
@@ -35,9 +36,9 @@ namespace Otc.ExceptionHandling.Tests
             {
                 statusCode = c;
                 response.SetupGet(p => p.StatusCode).Returns(statusCode);
-            }) ;
+            });
 
-            
+
 
             httpContextMock.Setup(x => x.Response).Returns(() => response.Object);
 
@@ -52,8 +53,8 @@ namespace Otc.ExceptionHandling.Tests
 
             serviceCollection.AddExceptionHandling();
             serviceCollection.AddExceptionHandlingConfiguration(config =>
-                config.ForException<NullReferenceException>(405, Abstractions.ExceptionHandlerBehavior.ServerError)
-                );
+                config.ForException<NullReferenceException>(405, 
+                Abstractions.ExceptionHandlerBehavior.ServerError));
 
             serviceCollection.AddScoped<ILoggerFactory>(ctx => new LoggerFactory());
 
@@ -61,7 +62,8 @@ namespace Otc.ExceptionHandling.Tests
 
             var exceptionHandler = serviceProvider.GetRequiredService<IExceptionHandler>();
 
-            var statusCode = await exceptionHandler.HandleExceptionAsync(new NullReferenceException(), httpContext);
+            var statusCode = await exceptionHandler.HandleExceptionAsync(new NullReferenceException(), 
+                httpContext);
 
             Assert.Equal(405, statusCode);
         }
@@ -74,8 +76,8 @@ namespace Otc.ExceptionHandling.Tests
 
             serviceCollection.AddExceptionHandling();
             serviceCollection.AddExceptionHandlingConfiguration(config =>
-                config.ForException(typeof(NullReferenceException), 411, Abstractions.ExceptionHandlerBehavior.ServerError)
-                );
+                config.ForException(typeof(NullReferenceException), 411, 
+                Abstractions.ExceptionHandlerBehavior.ServerError));
 
             serviceCollection.AddScoped<ILoggerFactory>(ctx => new LoggerFactory());
 
@@ -83,7 +85,8 @@ namespace Otc.ExceptionHandling.Tests
 
             var exceptionHandler = serviceProvider.GetRequiredService<IExceptionHandler>();
 
-            var statusCode = await exceptionHandler.HandleExceptionAsync(new NullReferenceException(), httpContext);
+            var statusCode = await exceptionHandler.HandleExceptionAsync(new NullReferenceException(), 
+                httpContext);
 
             Assert.Equal(411, statusCode);
         }
@@ -105,7 +108,8 @@ namespace Otc.ExceptionHandling.Tests
 
             var exceptionHandler = serviceProvider.GetRequiredService<IExceptionHandler>();
 
-            var statusCode = await exceptionHandler.HandleExceptionAsync(new NullReferenceException(), httpContext);
+            var statusCode = await exceptionHandler.HandleExceptionAsync(new NullReferenceException(), 
+                httpContext);
 
             Assert.Equal(200, statusCode);
         }
@@ -124,7 +128,8 @@ namespace Otc.ExceptionHandling.Tests
 
             var exceptionHandler = serviceProvider.GetRequiredService<IExceptionHandler>();
 
-            var statusCode = await exceptionHandler.HandleExceptionAsync(new UnauthorizedAccessException(), httpContext);
+            var statusCode = await exceptionHandler.HandleExceptionAsync(new 
+                UnauthorizedAccessException(), httpContext);
 
             Assert.Equal(403, statusCode);
         }
@@ -143,7 +148,8 @@ namespace Otc.ExceptionHandling.Tests
 
             var exceptionHandler = serviceProvider.GetRequiredService<IExceptionHandler>();
 
-            var statusCode = await exceptionHandler.HandleExceptionAsync(new DomainException(), httpContext);
+            var statusCode = await exceptionHandler.HandleExceptionAsync(new DomainException(), 
+                httpContext);
 
             Assert.Equal(400, statusCode);
         }
@@ -162,7 +168,8 @@ namespace Otc.ExceptionHandling.Tests
 
             var exceptionHandler = serviceProvider.GetRequiredService<IExceptionHandler>();
 
-            var statusCode = await exceptionHandler.HandleExceptionAsync(new Exception(), httpContext);
+            var statusCode = await exceptionHandler.HandleExceptionAsync(new Exception(), 
+                httpContext);
 
             Assert.Equal(500, statusCode);
         }
@@ -201,7 +208,8 @@ namespace Otc.ExceptionHandling.Tests
 
     public class ExceptionEvent : IExceptionHandlerEvent
     {
-        public (int statusCode, Exception exception, ExceptionHandlerBehavior behavior) Intercept(int statusCode, Exception exception)
+        public (int statusCode, Exception exception, ExceptionHandlerBehavior behavior) 
+            Intercept(int statusCode, Exception exception)
         {
             return (200, new Exception("nova exception"), ExceptionHandlerBehavior.ServerError);
         }
@@ -225,7 +233,7 @@ namespace Otc.ExceptionHandling.Tests
         public override long? ContentLength { get; set; }
         public override string ContentType { get; set; }
 
-        public override IResponseCookies Cookies {get;}
+        public override IResponseCookies Cookies { get; }
 
         public override bool HasStarted => true;
 
@@ -243,17 +251,15 @@ namespace Otc.ExceptionHandling.Tests
         {
             throw new NotImplementedException();
         }
-
     }
-
-   
 }
 
 namespace Otc.ExceptionHandling
 {
     public static class HttpResponseWritingExtensions
     {
-        public static Task WriteAsync(this Response response, string text, Encoding encoding, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task WriteAsync(this Response response, string text, Encoding encoding,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }

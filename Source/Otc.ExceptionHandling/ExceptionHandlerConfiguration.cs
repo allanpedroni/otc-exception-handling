@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Otc.ExceptionHandling
 {
@@ -31,7 +30,7 @@ namespace Otc.ExceptionHandling
 
             return null;
         }
-        
+
         private void Build(Action<IExceptionHandlerConfigurationExpression> action)
         {
             var configurationExpression = new ExceptionHandlerConfigurationExpression();
@@ -40,7 +39,8 @@ namespace Otc.ExceptionHandling
 
             this.Events.AddRange(configurationExpression.Events);
 
-            this.behaviors = new Dictionary<Type, ForExceptionBehavior>(configurationExpression.Behaviors);
+            this.behaviors = new Dictionary<Type, ForExceptionBehavior>(
+                configurationExpression.Behaviors);
         }
     }
 }

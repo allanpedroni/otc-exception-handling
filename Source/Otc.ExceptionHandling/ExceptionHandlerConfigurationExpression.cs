@@ -1,8 +1,6 @@
 ﻿using Otc.ExceptionHandling.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Otc.ExceptionHandling
 {
@@ -25,19 +23,27 @@ namespace Otc.ExceptionHandling
             return this;
         }
 
-        public IExceptionHandlerConfigurationExpression AddEvent<TEvent>() where TEvent : IExceptionHandlerEvent, new() => AddEvent(new TEvent());
+        public IExceptionHandlerConfigurationExpression AddEvent<TEvent>() where TEvent :
+            IExceptionHandlerEvent, new() => AddEvent(new TEvent());
 
 
-        public IExceptionHandlerConfigurationExpression ForException<TException>(int statusCode, ExceptionHandlerBehavior behavior = ExceptionHandlerBehavior.ClientError) where TException : Exception
+        public IExceptionHandlerConfigurationExpression ForException<TException>(int statusCode,
+            ExceptionHandlerBehavior behavior = ExceptionHandlerBehavior.ClientError)
+            where TException : Exception
         {
             ForException(typeof(TException), statusCode, behavior);
 
             return this;
         }
 
-        public IExceptionHandlerConfigurationExpression ForException(Type exception, int statusCode, ExceptionHandlerBehavior behavior = ExceptionHandlerBehavior.ClientError)
+        public IExceptionHandlerConfigurationExpression ForException(Type exception, int statusCode,
+            ExceptionHandlerBehavior behavior = ExceptionHandlerBehavior.ClientError)
         {
-            Behaviors.Add(exception, new ForExceptionBehavior() { StatusCode = statusCode, Behavior = behavior });
+            Behaviors.Add(exception, new ForExceptionBehavior()
+            {
+                StatusCode = statusCode,
+                Behavior = behavior
+            });
 
             return this;
         }

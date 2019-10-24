@@ -2,8 +2,8 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 
 namespace Otc.ExceptionHandling
 {
@@ -18,7 +18,8 @@ namespace Otc.ExceptionHandling
                 .Select(p => p.Name)
         );
 
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        protected override JsonProperty CreateProperty(MemberInfo member, 
+            MemberSerialization memberSerialization)
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
 

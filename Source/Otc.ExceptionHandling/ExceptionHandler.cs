@@ -4,9 +4,7 @@ using Newtonsoft.Json;
 using Otc.DomainBase.Exceptions;
 using Otc.ExceptionHandling.Abstractions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,7 +29,7 @@ namespace Otc.ExceptionHandling
         public async Task<int> HandleExceptionAsync(Exception exception, HttpContext httpContext)
         {
             ExceptionHandlerBehavior? behavior = null;
-            (httpContext.Response.StatusCode, exception, behavior) = 
+            (httpContext.Response.StatusCode, exception, behavior) =
                 await ValidateConfigurationsAsync(httpContext.Response.StatusCode, exception);
 
             if (exception is AggregateException)
@@ -61,17 +59,18 @@ namespace Otc.ExceptionHandling
                 {
                     case ExceptionHandlerBehavior.ClientError:
                         return await GenerateCoreExceptionResponseAsync(exception, httpContext);
-                 
+
                     case ExceptionHandlerBehavior.ServerError:
                         return await GenerateInternalErrorResponseAsync(exception, httpContext);
-                 
+
                 }
             }
 
             return httpContext.Response.StatusCode;
         }
 
-        private async Task<ExceptionHandlerBehavior> IdentifyBehaviorAsync(Exception exception, HttpContext httpContext)
+        private Task<ExceptionHandlerBehavior> IdentifyBehaviorAsync(Exception exception,
+            HttpContext httpContext)
         {
             ExceptionHandlerBehavior behavior;
 
@@ -87,7 +86,7 @@ namespace Otc.ExceptionHandling
                 httpContext.Response.StatusCode = 500;
             }
 
-            return behavior;
+            return Task.FromResult(behavior);
         }
 
         private async Task<int> GenerateCoreExceptionResponseAsync(Exception e, HttpContext httpContext)
@@ -127,8 +126,8 @@ namespace Otc.ExceptionHandling
         {
             Exception exception = e;
             Guid logEntryId = Guid.NewGuid();
-            
-            logger.LogError(e, "{LogEntryId}: Ocorreu um erro não esperado.", logEntryId);           
+
+            logger.LogError(e, "{LogEntryId}: Ocorreu um erro não esperado.", logEntryId);
 
             var internalError = new InternalError()
             {
@@ -136,7 +135,7 @@ namespace Otc.ExceptionHandling
                 Exception = (IsDevelopmentEnvironment() ? exception.GetBaseException() : null)
             };
 
-            await GenerateResponseAsync( internalError, httpContext);
+            await GenerateResponseAsync(internalError, httpContext);
 
             return httpContext.Response.StatusCode;
         }
@@ -162,7 +161,8 @@ namespace Otc.ExceptionHandling
             await httpContext.Response.WriteAsync(message, Encoding.UTF8);
         }
 
-        private Task<(int statusCode, Exception exception, ExceptionHandlerBehavior? behavior)> ValidateConfigurationsAsync(int statusCode, Exception e)
+        private Task<(int statusCode, Exception exception, ExceptionHandlerBehavior? behavior)>
+            ValidateConfigurationsAsync(int statusCode, Exception e)
         {
             Exception exception = e;
             int finalStatusCode = statusCode;
@@ -186,7 +186,7 @@ namespace Otc.ExceptionHandling
 
                     if (behaviorResult != null)
                     {
-                        behavior = behaviorResult.Behavior;                       
+                        behavior = behaviorResult.Behavior;
 
                         finalStatusCode = behaviorResult.StatusCode;
                     }
