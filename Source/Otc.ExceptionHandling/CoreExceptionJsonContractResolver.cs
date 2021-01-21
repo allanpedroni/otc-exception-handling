@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -13,17 +13,17 @@ namespace Otc.ExceptionHandling
     /// </summary>
     internal class CoreExceptionJsonContractResolver : CamelCasePropertyNamesContractResolver
     {
-        private static readonly HashSet<string> ignoreProperties = new HashSet<string>(
+        private static readonly HashSet<string> IgnoreProperties = new HashSet<string>(
             typeof(Exception).GetProperties().Where(p => p.Name != nameof(Exception.Message))
                 .Select(p => p.Name)
         );
 
-        protected override JsonProperty CreateProperty(MemberInfo member, 
+        protected override JsonProperty CreateProperty(MemberInfo member,
             MemberSerialization memberSerialization)
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-            if (ignoreProperties.Contains(member.Name))
+            if (IgnoreProperties.Contains(member.Name))
             {
                 property.Ignored = true;
             }

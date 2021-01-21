@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Otc.ExceptionHandling.Abstractions;
 using System;
@@ -12,14 +12,10 @@ namespace Otc.Mvc.Filters
 
         public ExceptionFilter(IExceptionHandler exceptionHandler, ILoggerFactory loggerFactory)
         {
-            this.exceptionHandler = exceptionHandler;
-            
-            if(exceptionHandler == null)
+            this.exceptionHandler = exceptionHandler ??
                 throw new ArgumentNullException(nameof(exceptionHandler));
-
-            logger = loggerFactory?.CreateLogger<ExceptionFilter>();
-
-            if (logger == null)
+            
+            logger = loggerFactory?.CreateLogger<ExceptionFilter>() ??
                 throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -28,11 +24,13 @@ namespace Otc.Mvc.Filters
             try
             {
                 exceptionHandler.HandleExceptionAsync(context.Exception, context.HttpContext).Wait();
+
                 context.ExceptionHandled = true;
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, $"Provavelmente existe um BUG na biblioteca que implementa '{typeof(IExceptionHandler).FullName}'. Verifique a excecao logada para obter mais detalhes.");
+                logger.LogCritical(0, e, $"Provavelmente existe um BUG na biblioteca que implementa " +
+                    $"'{typeof(IExceptionHandler).FullName}'. Verifique a excecao logada para obter mais detalhes.");
             }
         }
     }

@@ -1,7 +1,7 @@
-﻿using Otc.ExceptionHandling.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Otc.ExceptionHandling.Abstractions;
 
 namespace Otc.ExceptionHandling
 {
